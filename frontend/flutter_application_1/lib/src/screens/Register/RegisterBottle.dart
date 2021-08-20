@@ -1,5 +1,3 @@
-import 'package:Smart_Medicine_Box/src/screens/DashBoard.dart';
-import 'package:Smart_Medicine_Box/src/screens/Register/BottleList.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'SearchMedicine.dart';
+import '../BottleList.dart';
 import '../../utils/user_secure_stoarge.dart';
 
 class RegisterBottle extends StatefulWidget {
@@ -139,7 +138,6 @@ class _RegisterBottleState extends State<RegisterBottle> {
                   );
                 } else if (saveMessage == "등록 완료" &&
                     widget.modify_bottle == true) {
-                  print('asdg');
                   await showDialog(
                     context: context,
                     builder: (BuildContext context) {

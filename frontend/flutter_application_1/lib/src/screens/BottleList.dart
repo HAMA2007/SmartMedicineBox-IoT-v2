@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:Smart_Medicine_Box/src/screens/Register/DoctorRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/Bottle.dart';
-import '../DashBoard.dart';
-import '../../utils/user_secure_stoarge.dart';
+import 'models/Bottle.dart';
+import 'DashBoard.dart';
+import '../utils/user_secure_stoarge.dart';
 
 class BottleList extends StatefulWidget {
   BottleList({Key key}) : super(key: key);
@@ -15,9 +16,12 @@ class BottleList extends StatefulWidget {
 }
 
 class _BottleListState extends State<BottleList> {
+  int newalarm = 0;
+
   String valueText;
   List<Bottle> _bottleList = new List<Bottle>();
   TextEditingController _textFieldController = TextEditingController();
+
   Future<String> getBottleList() async {
     String hubid = await UserSecureStorage.getHubId();
     String usertoken = await UserSecureStorage.getUserToken();
@@ -90,7 +94,7 @@ class _BottleListState extends State<BottleList> {
                       width: size.width,
                       child: Center(
                         child: Text(
-                          '등록된 약병 리스트',
+                          'BOTTLE LIST',
                           textScaleFactor: 1.0,
                           style: TextStyle(
                               fontSize: 28,
@@ -133,13 +137,13 @@ class _BottleListState extends State<BottleList> {
                                             style: BorderStyle.solid),
                                       ),
                                     ),
-                                    height: 40,
+                                    height: 30,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Container(
-                                          height: 40,
+                                          height: 30,
                                           child: Center(
                                             child: Text(
                                               '${_bottleList[index].bottleId}',
@@ -151,35 +155,29 @@ class _BottleListState extends State<BottleList> {
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          child: IconButton(
-                                            alignment: Alignment(0.9, 0),
-                                            icon: Icon(
-                                              Icons.create_sharp,
-                                              color: Colors.black,
-                                            ),
-                                            onPressed: () {},
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: 10),
+                                  SizedBox(height: 5),
                                   Container(
-                                    height: 90,
+                                    height: 70,
                                     child: Icon(
                                       Icons.medical_services_outlined,
-                                      size: 100,
+                                      size: 70,
                                     ),
                                   )
                                 ],
                               ),
                             ),
                             onTap: () {
-                              UserSecureStorage.setBottleId(
-                                  _bottleList[index].bottleId.toString());
-                              UserSecureStorage.setMedicineId(
-                                  _bottleList[index].medicineId.toString());
+                              if (_bottleList[index].medicineId == null) {
+                                //약병에 약이 없는 경우
+                              } else {
+                                UserSecureStorage.setBottleId(
+                                    _bottleList[index].bottleId.toString());
+                                UserSecureStorage.setMedicineId(
+                                    _bottleList[index].medicineId.toString());
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -198,6 +196,53 @@ class _BottleListState extends State<BottleList> {
               );
             }
           },
+        ),
+        floatingActionButton: Container(
+          child: FittedBox(
+            child: Stack(
+              alignment: Alignment(1.4, -1.5),
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    //여기 누르면 넘어가는데 아마 숫자가 있을 경우만 넘어가도록 하기
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => DoctorRequest(),
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.email_outlined),
+                  backgroundColor: Colors.blue,
+                ),
+                newalarm != 0
+                    ? Container(
+                        // This is your Badge
+                        child: Center(
+                          // child 문을  ? : 를 이용하여 구분하자
+                          child: Text(newalarm.toString(),
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        padding: EdgeInsets.all(8),
+                        constraints:
+                            BoxConstraints(minHeight: 32, minWidth: 32),
+                        decoration: BoxDecoration(
+                          // This controls the shadow
+                          boxShadow: [
+                            BoxShadow(
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                color: Colors.black.withAlpha(50))
+                          ],
+                          borderRadius: BorderRadius.circular(16),
+                          color:
+                              Colors.blue, // This would be color of the Badge
+                        ),
+                      )
+                    : new Container()
+              ],
+            ),
+          ),
         ),
       ),
       onWillPop: () {
