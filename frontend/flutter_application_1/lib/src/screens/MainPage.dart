@@ -8,7 +8,7 @@ import '../utils/user_secure_stoarge.dart';
 import 'models/Medicine.dart';
 
 import 'Register/SearchMedicine.dart';
-//import 'package:flutter_material_pickers/flutter_material_pickers.dart';
+import '../../flutter_material_pickers.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -16,11 +16,11 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  String _seletedDoctor = '';
   Widget build(BuildContext context) {
     Medicine _medicineInformation = new Medicine();
     List<String> doctorlist = ['temp1', 'temp2', 'temp3', 'temp4'];
 
-    String seletedDoctor = '';
     Future<Medicine> _getmedicine() async {
       String usertoken = await UserSecureStorage.getUserToken();
       String medicineid = await UserSecureStorage.getMedicineId();
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
                                 Text(
                                   _medicineInformation.company == null
                                       ? '-'
-                                      : '대강 처방의 이름',
+                                      : _seletedDoctor,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
@@ -272,14 +272,15 @@ class _MainPageState extends State<MainPage> {
                         child: FlatButton(
                           padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                           onPressed: () async {
-                            /*showMaterialScrollPicker(
+                            await showMaterialScrollPicker(
                               context: context,
                               title: '처방의',
                               items: doctorlist,
-                              selectedItem: seletedDoctor,
-                              onChanged: (value) =>
-                                  setState(() => seletedDoctor = value),
-                            );*/
+                              selectedItem: _seletedDoctor,
+                              onChanged: (value) => setState(() {
+                                _seletedDoctor = value;
+                              }),
+                            );
                           },
                           child: Text(
                             '처방의 변경',

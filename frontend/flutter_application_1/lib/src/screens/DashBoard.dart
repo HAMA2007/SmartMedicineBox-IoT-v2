@@ -10,7 +10,7 @@ import 'models/Medicine.dart';
 import 'package:Smart_Medicine_Box/src/screens/SettingPage.dart';
 import 'BottleList.dart';
 import 'MainPage.dart';
-import 'Register/SearchMedicine.dart';
+import 'FeedBack.dart';
 
 class DashBoard extends StatefulWidget {
   int pageNumber;
@@ -60,7 +60,7 @@ class _DashBoardState extends State<DashBoard> {
     var _tabs = [
       ineerInformationpage(context),
       MainPage(),
-      feedBackPage(context),
+      FeedbackPage(),
     ];
 
     return WillPopScope(
@@ -500,151 +500,5 @@ Widget ineerInformationpage(BuildContext context) {
         }
       },
     ),
-  );
-}
-
-Widget feedBackPage(BuildContext context) {
-  Bottle _bottleinformation = new Bottle();
-  //get bottle
-  Future<Bottle> _getbottle() async {
-    String usertoken = await UserSecureStorage.getUserToken();
-    String bottleid = await UserSecureStorage.getBottleId();
-    Bottle _bottleinformation = new Bottle();
-    http.Response response = await http.get(
-        Uri.encodeFull(DotEnv().env['SERVER_URL'] + 'bottle/' + bottleid),
-        headers: {"authorization": usertoken});
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
-
-      _bottleinformation = Bottle.fromJson(jsonData);
-    }
-    return _bottleinformation;
-  }
-
-  final Size size = MediaQuery.of(context).size;
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: FutureBuilder(
-        future: _getbottle(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData == false) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: TextStyle(fontSize: 15),
-              ),
-            );
-          } else {
-            return Container(
-              height: size.height * 0.9,
-              margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-              padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    height: size.height * 0.08,
-                    width: size.width,
-                    child: Center(
-                      child: Text(
-                        'Outside Information',
-                        textAlign: TextAlign.center,
-                        textScaleFactor: 1.0,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 32,
-                            fontFamily: 'NotoSansKR',
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    height: size.height * 0.20,
-                    width: size.width,
-                    child: Column(
-                      children: <Widget>[
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                                width: size.width * 0.9,
-                                height: size.height * 0.18,
-                                decoration: BoxDecoration(
-                                  color: Color(0xff8E97FD),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: size.width,
-                                      height: size.height * 0.05,
-                                      child: Center(
-                                        child: Text(
-                                          '권장 약 복용량',
-                                          textAlign: TextAlign.center,
-                                          textScaleFactor: 1.0,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                              fontFamily: 'NotoSansKR',
-                                              fontWeight: FontWeight.w800),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: size.width,
-                                      height: size.height * 0.12,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            snapshot.data.dosage == null
-                                                ? '-'
-                                                : snapshot.data.dosage
-                                                    .toString(),
-                                            textAlign: TextAlign.center,
-                                            textScaleFactor: 1.0,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 80,
-                                                fontFamily: 'NotoSansKR',
-                                                fontWeight: FontWeight.w800),
-                                          ),
-                                          Text(
-                                            ' 개',
-                                            textScaleFactor: 1.0,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 64,
-                                                fontFamily: 'NotoSansKR',
-                                                fontWeight: FontWeight.w800),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-        }),
   );
 }

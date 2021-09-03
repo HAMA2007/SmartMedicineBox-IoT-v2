@@ -407,12 +407,9 @@ class _AlarmnState extends State<Alarm> {
                 times[index - 1] = timeString;
                 timesHours[index - 1] = timeHour;
                 timesMinutes[index - 1] = timesMinite;
-
                 _prefs.setString('time' + (saveIndex[index - 1]).toString(),
                     savetimeStrings);
-
                 print(savetimeStrings);
-
                 setState(() {
                   savetimeStrings = savetimeStrings;
                 });
