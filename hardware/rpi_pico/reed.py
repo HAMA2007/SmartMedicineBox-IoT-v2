@@ -1,6 +1,6 @@
 from machine import Pin, Signal
 
-data_pin = Pin(16, Pin.IN)
+data_pin = Pin(18, Pin.IN)
 
 # --------------------------------------------------- #
 # FUNCTIONS

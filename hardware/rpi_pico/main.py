@@ -5,9 +5,9 @@ import rp2
 import neopixel
 import dht
 import bluetoooth as bto
-import ultrasonic
 import reed
 import display4
+import hx711m
 
 # --------------------------------------------------- #
 # FUNCTIONS
@@ -17,10 +17,10 @@ def _collect_sensor_datas(reed_data:int) -> str:
     dht_data = dht.work_dht()
     if dht_data == False:
         dht_data = [0,0]
-    # Collect Ultrasonic distance
-    ultrasonic_data = ultrasonic.work_sr04()
+    # Collect Weight
+    weight_data = hx711m.work_hx711()
     # Make data string
-    send_data_str = str(reed_data) + '/' + str(dht_data[1]) + '/' + str(dht_data[0]) + '/' + str(ultrasonic_data)
+    send_data_str = str(reed_data) + '/' + str(dht_data[1]) + '/' + str(weight_data) + '/' + str(dht_data[0])  
 
     return send_data_str
 
@@ -30,6 +30,7 @@ def _collect_sensor_datas(reed_data:int) -> str:
 def _run():
     # INIT REED STATE
     reed_data = -1
+    display4.off_tm1637()
     # LOOP
     while True:
         # ------------------------------------------- #
@@ -48,7 +49,7 @@ def _run():
             # Refine BT data
             input_data = input_data.strip()
             # Test code
-            print('INPUT FOUND ', input_data)
+            # print('INPUT FOUND ', input_data)
             
             # IF INPUT MEANS GET MESSAGE or MEDICINE LID STATUS CHANGED
             if input_data == 'REQ' or reed_data != current_reed_data:

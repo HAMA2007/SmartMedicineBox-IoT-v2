@@ -22,4 +22,3 @@ def work_sr04():
     distance = (timepassed * 0.0330) / 2
     
     return distance
-
