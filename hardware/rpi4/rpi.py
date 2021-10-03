@@ -6,7 +6,8 @@ import time
 
 MQTT_BLOCK = False
 
-BT_MAC_ADDRESS = '00:18:91:D8:24:39'
+# BT_MAC_ADDRESS = '00:18:91:D8:24:39' (Version1)
+BT_MAC_ADDRESS = '00:18:91:D8:23:E8' # Version2
 MED_BOTT_NO = '1'
 
 client_socket = BluetoothSocket( RFCOMM )
@@ -46,6 +47,17 @@ def _sub_mqtt(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe(f'bottle/1/stb')
 
+def _handle_error(data):
+    ''' If input data len, and type not met, return [] / else return original data
+    '''
+    if len(data) != 4:
+        return []
+    if len(data[0]) == 0:
+        return []
+    if len(data[len(data) - 1]) == 0:
+       return []
+    return data
+
 def _work_mqtt(client, userdata, msg):
     ''' MQTT에서 데이터를 받으면 알맞게 로직을 수행한다
     '''
@@ -60,20 +72,12 @@ def _work_mqtt(client, userdata, msg):
 
     # 만약 req메시지를 받았다면
     if received_msg == 'req':
-        # 데이터가 손실되어 왔을 경우 에러 처리
-        if len(data_list[0]) == 0:
-            data_list = []
-        elif len(data_list[3]) == 0:
-            data_list = []
         while len(data_list) != 4:
             _send_data('REQ')
             data = _recv_data()
             data_list = data.split('/')
             # 데이터가 손실되어 왔을 경우 에러 처리
-            if len(data_list[0]) == 0:
-                data_list = []
-            elif len(data_list[3]) == 0:
-                data_list = []
+            data_list = _handle_error(data_list)
         # 데이터를 Publish한다
         _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data, 'localhost')
         
@@ -83,20 +87,14 @@ def _work_mqtt(client, userdata, msg):
         data = _recv_data()
         data_list = data.split('/')
         # 데이터가 손실되어 왔을 경우 에러 처리
-        if len(data_list[0]) == 0:
-            data_list = []
-        elif len(data_list[3]) == 0:
-            data_list = []
+        data_list = _handle_error(data_list)
 
         while len(data_list) != 4:
             _send_data('REQ')
             data = _recv_data()
             data_list = data.split('/')
             # 데이터가 손실되어 왔을 경우 에러 처리
-            if len(data_list[0]) == 0:
-                data_list = []
-            elif len(data_list[3]) == 0:
-                data_list = []
+            data_list = _handle_error(data_list)
         # 데이터를 Publish한다
         # _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data, 'localhost')
 
@@ -141,20 +139,14 @@ def _run():
                 data_list = data.split('/')
 
                 # 데이터가 손실되어 왔을 경우 에러 처리
-                if len(data_list[0]) == 0:
-                    data_list = []
-                elif len(data_list[3]) == 0:
-                    data_list = []
+                data_list = _handle_error(data_list)
                 
                 # 만약 데이터가 불량하게 왔을 경우, 제대로 올때까지 반복시도한다
                 while len(data_list) != 4:
                     data = _recv_data()
                     data_list = data.split('/')
                     # 데이터가 손실되어 왔을 경우 에러 처리
-                    if len(data_list[0]) == 0:
-                        data_list = []
-                    elif len(data_list[3]) == 0:
-                        data_list = []
+                    data_list = _handle_error(data_list)
 
                 # 데이터를 Publish한다
                 _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data, 'localhost')
