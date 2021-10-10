@@ -27,4 +27,13 @@ msgs = \
     }
 ]
 
+# server -> hub request weight
+msgs = \
+[
+    {
+        'topic':"bottle/1/stb",
+        'payload':"weight"
+    }
+]
+
 publish.multiple(msgs, hostname="localhost")
