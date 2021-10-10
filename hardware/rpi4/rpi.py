@@ -97,6 +97,17 @@ def _work_mqtt(client, userdata, msg):
             data_list = _handle_error(data_list)
         # 데이터를 Publish한다
         # _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data, 'localhost')
+    
+    # 만약 weight메시지를 받았다면
+    elif received_msg == 'weight':
+        while len(data_list) != 4:
+            _send_data('REQ')
+            data = _recv_data()
+            data_list = data.split('/')
+            # 데이터가 손실되어 왔을 경우 에러 처리
+            data_list = _handle_error(data_list)
+        # 데이터를 Publish한다
+        _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data.split('/')[2], 'localhost')
 
     print("DEBUG")
     print(data)
