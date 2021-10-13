@@ -19,7 +19,7 @@ def _collect_sensor_datas(reed_data:int) -> str:
         dht_data = [0,0]
     # Collect Weight
     weight_data = hx711m.work_hx711()
-    # Make data string
+    # Make data string // 리드 / 온도 / 무게 / 습도
     send_data_str = str(reed_data) + '/' + str(dht_data[1]) + '/' + str(weight_data) + '/' + str(dht_data[0])  
 
     return send_data_str

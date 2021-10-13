@@ -8,7 +8,8 @@ MQTT_BLOCK = False
 
 # BT_MAC_ADDRESS = '00:18:91:D8:24:39' (Version1)
 BT_MAC_ADDRESS = '00:18:91:D8:23:E8' # Version2
-MED_BOTT_NO = '1'
+MED_BOTT_NO = '50'
+# SERVER_IP = '192.168.5.240'
 
 client_socket = BluetoothSocket( RFCOMM )
 client_mqtt = mqtt.Client()
@@ -45,7 +46,7 @@ def _sub_mqtt(client, userdata, flags, rc):
     ''' MQTT에서 subscribe한다
     '''
     print("Connected with result code "+str(rc))
-    client.subscribe(f'bottle/1/stb')
+    client.subscribe(f'bottle/{MED_BOTT_NO}/stb')
 
 def _handle_error(data):
     ''' If input data len, and type not met, return [] / else return original data
@@ -61,7 +62,7 @@ def _handle_error(data):
 def _work_mqtt(client, userdata, msg):
     ''' MQTT에서 데이터를 받으면 알맞게 로직을 수행한다
     '''
-    print('DOING SOMETHING')
+    print('STB:DOING SOMETHING')
     global MQTT_BLOCK
     MQTT_BLOCK = True
 
@@ -107,7 +108,7 @@ def _work_mqtt(client, userdata, msg):
             # 데이터가 손실되어 왔을 경우 에러 처리
             data_list = _handle_error(data_list)
         # 데이터를 Publish한다
-        _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', data.split('/')[2], 'localhost')
+        _pub_mqtt(f'bottle/{MED_BOTT_NO}/bts', f"weight/{data.split('/')[2]}", 'localhost')
 
     print("DEBUG")
     print(data)
@@ -146,8 +147,9 @@ def _run():
 
             # 만약 데이터가 ''가 아니면 무언가 온 것이므로 처리한다
             if data != '':
-                print('DATA IN')
+                print('BTS:DATA IN')
                 data_list = data.split('/')
+                print('BTS:',data_list)
 
                 # 데이터가 손실되어 왔을 경우 에러 처리
                 data_list = _handle_error(data_list)
